@@ -41,6 +41,8 @@ public class BluetoothIncomingController {
 
     public synchronized void start() {
 
+        Log.d(TAG, "Registering receiver for bluetooth being enabled / disabled");
+
         bluetoothController.registerBluetoothEnablednessListener(
                 new BluetoothEnablednessHandler() {
                     @Override
@@ -57,7 +59,10 @@ public class BluetoothIncomingController {
                 }
         );
 
-        startServer();
+        if (bluetoothController.isEnabled()) {
+            startServer();
+        }
+
     }
 
     private synchronized void startServer() {
@@ -128,6 +133,12 @@ public class BluetoothIncomingController {
         @Override
         public void run() {
             while (true) {
+
+                if (!bluetoothController.isEnabled()) {
+                    Log.d(TAG, "Bluetooth not enabled: breaking from incoming connection main loop");
+                    break;
+                }
+
                 // Block until there is a new incoming connection, then add it to the connected devices
                 // then block again until there is a new connection. This loop exits when the thread is
                 // stopped and an interrupted exception is thrown

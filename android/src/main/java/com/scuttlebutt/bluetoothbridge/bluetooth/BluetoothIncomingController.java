@@ -85,7 +85,7 @@ public class BluetoothIncomingController {
 
     private synchronized void stopServer() {
         try {
-            this.mServerListenThread.closeListenSocket();
+            stopServerSocket();
         } catch (IOException e) {
             Log.d(TAG, "Error stopping incoming listen socket: " + e.getMessage());
         }

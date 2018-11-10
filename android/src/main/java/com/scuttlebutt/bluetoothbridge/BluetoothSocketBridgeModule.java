@@ -80,12 +80,15 @@ public class BluetoothSocketBridgeModule extends ReactContextBaseJavaModule impl
 
     BluetoothIncomingController bluetoothIncomingController = new BluetoothIncomingController(
             connectionBridge,
-            new YesNoPrompt(this)
+            bluetoothController,
+            new YesNoPrompt(this),
+            configuration.getServiceName(),
+            uuid
     );
 
     controlUnixSocket.start();
     connectionBridge.listenForOutgoingConnections();
-    bluetoothIncomingController.startServerSocket(configuration.getServiceName(), uuid);
+    bluetoothIncomingController.start();
 
   }
 

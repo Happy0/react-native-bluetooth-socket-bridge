@@ -2,7 +2,7 @@ package com.scuttlebutt.bluetoothbridge.control;
 
 import android.bluetooth.BluetoothDevice;
 
-import com.scuttlebutt.bluetoothbridge.bluetooth.DiscoveredBluetoothDevicesHandler;
+import com.scuttlebutt.bluetoothbridge.receivers.DiscoveredBluetoothDevicesHandler;
 
 import java.util.ArrayList;
 import java.util.HashMap;

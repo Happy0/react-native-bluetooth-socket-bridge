@@ -7,8 +7,10 @@ import android.bluetooth.BluetoothSocket;
 import android.content.DialogInterface;
 import android.util.Log;
 
+import com.facebook.react.bridge.ReactApplicationContext;
 import com.scuttlebutt.bluetoothbridge.bridge.ConnectionBridge;
 import com.scuttlebutt.bluetoothbridge.dialog.YesNoPrompt;
+import com.scuttlebutt.bluetoothbridge.receivers.BluetoothEnablednessHandler;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -17,35 +19,83 @@ public class BluetoothIncomingController {
 
     private static String TAG = "listen_incoming";
     private final ConnectionBridge connectionBridge;
+    private final String serviceName;
+    private final UUID serviceUUID;
+    private final BluetoothController bluetoothController;
     private ServerListenThread mServerListenThread;
     private YesNoPrompt yesNoPrompt;
 
-    public BluetoothIncomingController(ConnectionBridge connectionBridge, YesNoPrompt yesNoPrompt) {
+    public BluetoothIncomingController(
+            ConnectionBridge connectionBridge,
+            BluetoothController bluetoothController,
+            YesNoPrompt yesNoPrompt,
+            String serviceName,
+            UUID serviceUUID) {
+
         this.connectionBridge = connectionBridge;
+        this.bluetoothController = bluetoothController;
         this.yesNoPrompt = yesNoPrompt;
+        this.serviceName = serviceName;
+        this.serviceUUID = serviceUUID;
     }
 
-    /**
-     * Creates a server connection to listen for incoming connections.
-     * return true if a server was not running and a new server was started, false is a server was already running.
-     */
-    public synchronized boolean startServerSocket(String serviceName, UUID serviceUUID) {
+    public synchronized void start() {
 
-        BluetoothServerSocket bluetoothServerSocket = null;
-        try {
-            bluetoothServerSocket = BluetoothAdapter
-                    .getDefaultAdapter()
-                    .listenUsingRfcommWithServiceRecord(serviceName, serviceUUID);
-        } catch (IOException e) {
-            // TODO: how to handle this?
-            Log.d(TAG, "Could not listen for incoming bluetooth connections");
+        Log.d(TAG, "Registering receiver for bluetooth being enabled / disabled");
+
+        bluetoothController.registerBluetoothEnablednessListener(
+                new BluetoothEnablednessHandler() {
+                    @Override
+                    public void onEnabled() {
+                        Log.d(TAG, "Enabling incoming bluetooth connection server");
+                        startServer();
+                    }
+
+                    @Override
+                    public void onDisabled() {
+                        Log.d(TAG, "Stopping incoming bluetooth connection server");
+                        stopServer();
+                    }
+                }
+        );
+
+        if (bluetoothController.isEnabled()) {
+            startServer();
         }
 
-        // Listen for incoming connections on a new thread and put new entries into the
-        // connected devices map
-        this.mServerListenThread = new ServerListenThread(bluetoothServerSocket);
-        mServerListenThread.start();
-        return true;
+    }
+
+    private synchronized void startServer() {
+
+        if (this.mServerListenThread != null) {
+            Log.d(TAG, "Could not start incoming bluetooth connection server - already running");
+            return;
+        }
+
+        try {
+            BluetoothServerSocket bluetoothServerSocket = BluetoothAdapter
+                    .getDefaultAdapter()
+                    .listenUsingRfcommWithServiceRecord(serviceName, serviceUUID);
+
+            // Listen for incoming connections on a new thread and put new entries into the
+            // connected devices map
+            this.mServerListenThread = new ServerListenThread(bluetoothServerSocket);
+            mServerListenThread.start();
+
+        } catch (IOException e) {
+            // TODO: how to handle this?
+            Log.d(TAG, "Could not listen for incoming bluetooth connections: " + e.getMessage());
+        }
+    }
+
+    private synchronized void stopServer() {
+        try {
+            stopServerSocket();
+        } catch (IOException e) {
+            Log.d(TAG, "Error stopping incoming listen socket: " + e.getMessage());
+        }
+
+        this.mServerListenThread = null;
     }
 
     /**
@@ -83,6 +133,12 @@ public class BluetoothIncomingController {
         @Override
         public void run() {
             while (true) {
+
+                if (!bluetoothController.isEnabled()) {
+                    Log.d(TAG, "Bluetooth not enabled: breaking from incoming connection main loop");
+                    break;
+                }
+
                 // Block until there is a new incoming connection, then add it to the connected devices
                 // then block again until there is a new connection. This loop exits when the thread is
                 // stopped and an interrupted exception is thrown

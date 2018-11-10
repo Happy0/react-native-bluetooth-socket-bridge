@@ -1,4 +1,4 @@
-package com.scuttlebutt.bluetoothbridge.bluetooth;
+package com.scuttlebutt.bluetoothbridge.receivers;
 
 import android.bluetooth.BluetoothDevice;
 

@@ -11,6 +11,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.scuttlebutt.bluetoothbridge.BluetoothSocketBridgeModule;
 import com.scuttlebutt.bluetoothbridge.control.DiscoveredDevicesHandler;
 import com.scuttlebutt.bluetoothbridge.control.MakeDeviceDiscoverableHandler;
+import com.scuttlebutt.bluetoothbridge.receivers.BluetoothEnablednessHandler;
 
 
 import java.util.ArrayList;
@@ -51,6 +52,37 @@ public class BluetoothController {
         if (adapter != null) {
             adapter.startDiscovery();
         }
+    }
+
+    public void registerBluetoothEnablednessListener(final BluetoothEnablednessHandler handler) {
+
+        IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
+
+        final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                final String action = intent.getAction();
+
+                if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
+                    final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE,
+                            BluetoothAdapter.ERROR);
+                    switch (state) {
+                        case BluetoothAdapter.STATE_OFF:
+                            handler.onDisabled();
+                            break;
+                        case BluetoothAdapter.STATE_TURNING_OFF:
+                            break;
+                        case BluetoothAdapter.STATE_ON:
+                            handler.onEnabled();
+                            break;
+                        case BluetoothAdapter.STATE_TURNING_ON:
+                            break;
+                    }
+                }
+            }
+        };
+
+        reactApplicationContext.registerReceiver(mReceiver, filter);
     }
 
     public void makeDeviceDiscoverable(int timeDiscoverable, MakeDeviceDiscoverableHandler responseHandler) {

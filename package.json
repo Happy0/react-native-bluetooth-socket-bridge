@@ -1,6 +1,6 @@
 {
   "name": "react-native-bluetooth-socket-bridge",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -14,5 +14,17 @@
   "peerDependencies": {
     "react-native": ">=0.55.4",
     "react-native-windows": "0.41.0-rc.1"
+  },
+  "react-native": {
+    "crypto": "react-native-crypto",
+    "chloride": "sodium-browserify-tweetnacl",
+    "fs": false,
+    "os": "@staltz/react-native-os",
+    "react-native-os": "@staltz/react-native-os",
+    "stream": "stream-browserify",
+    "process": "react-native-process-shim",
+    "url": "url",
+    "vm": "vm-browserify",
+    "rn-viewpager": "@staltz/rn-viewpager"
   }
 }

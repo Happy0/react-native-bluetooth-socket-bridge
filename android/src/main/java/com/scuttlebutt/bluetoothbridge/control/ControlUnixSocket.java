@@ -220,6 +220,17 @@ public class ControlUnixSocket {
             BluetoothControlCommand command = new BluetoothControlCommand("isEnabled", arguments);
 
             commandResponseQueue.add(command);
+        } else if(commandName.equals("ownMacAddress")) {
+            Log.d(TAG, "Getting own mac address");
+
+            String address = bluetoothController.getOwnMacAddress();
+
+            Map<String, Object> arguments = new HashMap<>();
+            arguments.put("address", address);
+
+            BluetoothControlCommand command = new BluetoothControlCommand("ownMacAddress", arguments);
+
+            commandResponseQueue.add(command);
         }
 
     }

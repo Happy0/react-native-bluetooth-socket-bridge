@@ -93,6 +93,10 @@ public class BluetoothController {
         return adapter.isEnabled();
     }
 
+    public String getOwnMacAddress() {
+        return adapter.getAddress();
+    }
+
     /**
      * Register receiver for bluetooth device discovery
      * @param handler

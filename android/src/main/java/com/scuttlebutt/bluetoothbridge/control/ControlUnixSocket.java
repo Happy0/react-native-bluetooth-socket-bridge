@@ -235,7 +235,7 @@ public class ControlUnixSocket {
             Log.d(TAG, "Starting metadata service");
 
             String serviceName = bluetoothControlCommand.getArgumentAsString("serviceName");
-            String serviceUUID = bluetoothControlCommand.getArgumentAsString("serviceUUID");
+            String serviceUUID = bluetoothControlCommand.getArgumentAsString("service");
             String payload = bluetoothControlCommand.getArgumentAsString("payload");
             long timeSeconds = bluetoothControlCommand.getArgumentAsInt("timeSeconds");
 

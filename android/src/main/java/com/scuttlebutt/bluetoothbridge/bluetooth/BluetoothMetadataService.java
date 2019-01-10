@@ -32,6 +32,8 @@ public class BluetoothMetadataService {
             String metadata,
             long timeSeconds) {
 
+        Log.d(TAG, String.format("Attempting to start metadata service with params %s %s %s %d", serviceName, serviceUUID, metadata, timeSeconds));
+
         UUID uuid = UUID.fromString(serviceUUID);
 
         BluetoothServerSocket bluetoothServerSocket = BluetoothAdapter

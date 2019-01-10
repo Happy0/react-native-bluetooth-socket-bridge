@@ -99,8 +99,14 @@ public class BluetoothMetadataService {
     }
 
     public Runnable stopServerThread(Thread thread) {
-        Log.d(TAG, "Stopping bluetooth metadata service");
-        thread.stop();
+        return new Runnable() {
+            public void run() {
+                Log.d(TAG, "Stopping bluetooth metadata service");
+                thread.stop();
+
+                return;
+            }
+        }
     }
 
 }

@@ -31,7 +31,7 @@ public class BluetoothMetadataService {
             final String serviceName,
             final String serviceUUID,
             final String metadata,
-            long timeSeconds) {
+            long timeSeconds) throws IOException {
 
         Log.d(TAG, String.format("Attempting to start metadata service with params %s %s %s %d", serviceName, serviceUUID, metadata, timeSeconds));
 
@@ -46,10 +46,12 @@ public class BluetoothMetadataService {
             @Override
             public void run() {
 
+                boolean closed = false;
+
                 try {
                     while (true) {
 
-                        if (!bluetoothAdapter.isEnabled()) {
+                        if (!bluetoothAdapter.isEnabled() || closed) {
                             break;
                         }
 
@@ -73,7 +75,15 @@ public class BluetoothMetadataService {
                     }
                 } finally {
                     Log.d(TAG, "Closing bluetooth metadata service socket.");
-                    bluetoothServerSocket.close();
+
+                    try {
+                        bluetoothServerSocket.close();
+                    } catch (IOException ex) {
+
+                    } finally {
+                        closed = true;
+                    }
+
                 }
             }
 
@@ -84,6 +94,8 @@ public class BluetoothMetadataService {
 
         Handler handler = new Handler();
         handler.postDelayed(stopServerThread(thread), timeSeconds * 1000);
+
+        return;
     }
 
     public Runnable stopServerThread(Thread thread) {

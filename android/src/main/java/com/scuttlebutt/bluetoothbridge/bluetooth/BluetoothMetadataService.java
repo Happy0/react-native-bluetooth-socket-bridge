@@ -11,6 +11,7 @@ import java.io.OutputStream;
 import android.os.Handler;
 import android.util.Log;
 
+import java.io.IOException;
 
 /**
  * A service that just sends connecting clients the same payload every time, and then
@@ -27,16 +28,16 @@ public class BluetoothMetadataService {
     }
 
     public synchronized void startMetadataService(
-            String serviceName,
-            String serviceUUID,
-            String metadata,
+            final String serviceName,
+            final String serviceUUID,
+            final String metadata,
             long timeSeconds) {
 
         Log.d(TAG, String.format("Attempting to start metadata service with params %s %s %s %d", serviceName, serviceUUID, metadata, timeSeconds));
 
         UUID uuid = UUID.fromString(serviceUUID);
 
-        BluetoothServerSocket bluetoothServerSocket = BluetoothAdapter
+        final BluetoothServerSocket bluetoothServerSocket = BluetoothAdapter
                 .getDefaultAdapter()
                 .listenUsingRfcommWithServiceRecord(serviceName, uuid);
 
@@ -52,18 +53,23 @@ public class BluetoothMetadataService {
                             break;
                         }
 
-                        final BluetoothSocket socket = bluetoothServerSocket.accept();
-                        Log.d(TAG, "Accepted incoming connection to bluetooth metadata service.");
-
                         try {
-                            OutputStream outputStream = socket.getOutputStream();
-                            outputStream.write(metadata.getBytes());
-                            outputStream.flush();
+                            final BluetoothSocket socket = bluetoothServerSocket.accept();
+                            Log.d(TAG, "Accepted incoming connection to bluetooth metadata service.");
 
-                            outputStream.close();
-                        } finally {
-                            socket.close();
+                            try {
+                                OutputStream outputStream = socket.getOutputStream();
+                                outputStream.write(metadata.getBytes());
+                                outputStream.flush();
+
+                                outputStream.close();
+                            } finally {
+                                socket.close();
+                            }
+                        } catch (IOException ex) {
+                            Log.d(TAG, "IOException while writing payload: " + ex.getMessage());
                         }
+
                     }
                 } finally {
                     Log.d(TAG, "Closing bluetooth metadata service socket.");

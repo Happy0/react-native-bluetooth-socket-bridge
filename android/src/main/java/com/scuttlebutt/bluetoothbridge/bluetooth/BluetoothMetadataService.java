@@ -106,7 +106,7 @@ public class BluetoothMetadataService {
 
                 return;
             }
-        }
+        };
     }
 
 }

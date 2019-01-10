@@ -20,12 +20,9 @@ public class BluetoothMetadataService {
 
     private static String TAG = "bluetooth_metadata_service";
 
-    private boolean running = false;
-
     private final BluetoothAdapter bluetoothAdapter;
 
     public BluetoothMetadataService(BluetoothAdapter bluetoothAdapter) {
-        this.running = false;
         this.bluetoothAdapter = bluetoothAdapter;
     }
 
@@ -43,15 +40,13 @@ public class BluetoothMetadataService {
 
         Runnable runnable = new Runnable() {
 
-            boolean isClosed = false;
-
             @Override
             public void run() {
 
                 try {
                     while (true) {
 
-                        if (!bluetoothAdapter.isEnabled() || isClosed) {
+                        if (!bluetoothAdapter.isEnabled()) {
                             break;
                         }
 
@@ -65,7 +60,6 @@ public class BluetoothMetadataService {
 
                             outputStream.close();
                         } finally {
-                            isClosed = true;
                             socket.close();
                         }
                     }
@@ -73,9 +67,6 @@ public class BluetoothMetadataService {
                     Log.d(TAG, "Closing bluetooth metadata service socket.");
                     bluetoothServerSocket.close();
                 }
-
-
-
             }
 
         };

@@ -12,7 +12,7 @@ import com.scuttlebutt.bluetoothbridge.BluetoothSocketBridgeModule;
 import com.scuttlebutt.bluetoothbridge.control.DiscoveredDevicesHandler;
 import com.scuttlebutt.bluetoothbridge.control.MakeDeviceDiscoverableHandler;
 import com.scuttlebutt.bluetoothbridge.receivers.BluetoothEnablednessHandler;
-
+import com.scuttlebutt.bluetoothbridge.control.StartMetadataServiceHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +27,8 @@ public class BluetoothController {
     private final BluetoothAdapter adapter;
     private final ReactApplicationContext reactApplicationContext;
 
+    private final BluetoothMetadataService metadataService;
+
     public BluetoothController(
             BluetoothSocketBridgeModule module,
             ReactApplicationContext reactApplicationContext,
@@ -35,6 +37,8 @@ public class BluetoothController {
         this.module = module;
         this.reactApplicationContext = reactApplicationContext;
         this.adapter = adapter;
+
+        this.metadataService = new BluetoothMetadataService(adapter);
     }
 
     public void discoverNearbyDevices(DiscoveredDevicesHandler devicesHandler) {
@@ -52,6 +56,23 @@ public class BluetoothController {
         if (adapter != null) {
             adapter.startDiscovery();
         }
+    }
+
+    public void startMetadataService(
+            String serviceName,
+            String serviceUUID,
+            String payload,
+            long timeSeconds,
+            StartMetadataServiceHandler handler) {
+
+        try {
+            this.metadataService.startMetadataService(serviceName, serviceUUID, payload, timeSeconds);
+
+            handler.onSuccess(System.currentTimeMillis() + (timeSeconds * 1000));
+        } catch (Exception e) {
+            handler.onError(e.getMessage());
+        }
+
     }
 
     public void registerBluetoothEnablednessListener(final BluetoothEnablednessHandler handler) {

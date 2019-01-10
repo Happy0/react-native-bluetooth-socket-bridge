@@ -231,6 +231,17 @@ public class ControlUnixSocket {
             BluetoothControlCommand command = new BluetoothControlCommand("ownMacAddress", arguments);
 
             commandResponseQueue.add(command);
+        } else if (commandName.equals("startMetadataService")) {
+            Log.d(TAG, "Starting metadata service");
+
+            String serviceName = bluetoothControlCommand.getArgumentAsString("serviceName");
+            String serviceUUID = bluetoothControlCommand.getArgumentAsString("serviceUUID");
+            String payload = bluetoothControlCommand.getArgumentAsString("payload");
+            long timeSeconds = bluetoothControlCommand.getArgumentAsInt("timeSeconds");
+
+            StartMetadataServiceHandler handler = new StartMetadataServiceHandler(commandResponseQueue);
+
+            bluetoothController.startMetadataService(serviceName, serviceUUID, payload, timeSeconds, handler);
         }
 
     }

@@ -63,10 +63,8 @@ public class BluetoothMetadataService {
                                 OutputStream outputStream = socket.getOutputStream();
                                 outputStream.write(metadata.getBytes());
                                 outputStream.flush();
-
-                                outputStream.close();
                             } finally {
-                                socket.close();
+                                // socket.close();
                             }
                         } catch (IOException ex) {
                             Log.d(TAG, "IOException while writing payload: " + ex.getMessage());

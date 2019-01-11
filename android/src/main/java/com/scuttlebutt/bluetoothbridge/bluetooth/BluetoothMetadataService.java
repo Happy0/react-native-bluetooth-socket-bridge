@@ -111,15 +111,17 @@ public class BluetoothMetadataService {
     ) {
         Log.d(TAG, String.format("Attempting to get metadata with params %s %s", deviceAddress, serviceUUID));
 
-        UUID uuid = UUID.fromString(serviceUUID);
+        final UUID uuid = UUID.fromString(serviceUUID);
 
         Runnable runnable = new Runnable() {
             public void run() {
 
-                BluetoothDevice remoteDevice = bluetoothAdapter.getRemoteDevice(deviceAddress);
-                BluetoothSocket bluetoothSocket = remoteDevice.createRfcommSocketToServiceRecord(uuid);
+                BluetoothSocket bluetoothSocket = null;
 
                 try {
+                    BluetoothDevice remoteDevice = bluetoothAdapter.getRemoteDevice(deviceAddress);
+                    bluetoothSocket = remoteDevice.createRfcommSocketToServiceRecord(uuid);
+
                     bluetoothSocket.connect();
 
                     InputStream inputStream = bluetoothSocket.getInputStream();
@@ -137,7 +139,9 @@ public class BluetoothMetadataService {
                     handler.onError(ex.getMessage());
                 } finally {
                     try {
-                        bluetoothSocket.close();
+                        if (bluetoothSocket != null) {
+                            bluetoothSocket.close();
+                        }
                     } catch (IOException ex) {
 
                     }

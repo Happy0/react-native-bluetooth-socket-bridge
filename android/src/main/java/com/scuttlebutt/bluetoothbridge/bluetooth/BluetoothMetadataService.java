@@ -92,17 +92,23 @@ public class BluetoothMetadataService {
         Thread thread = new Thread(runnable);
         thread.start();
 
-        Handler handler = new Handler();
-        handler.postDelayed(stopServerThread(thread), timeSeconds * 1000);
+        Thread stopServerThread = new Thread(stopServerThread(thread, timeSeconds * 1000));
+        stopServerThread.start();
 
         return;
     }
 
-    public Runnable stopServerThread(final Thread thread) {
+    public Runnable stopServerThread(final Thread thread, final long stopAfter) {
         return new Runnable() {
             public void run() {
-                Log.d(TAG, "Stopping bluetooth metadata service");
-                thread.stop();
+
+                try {
+                    Thread.sleep(stopAfter);
+                } catch (InterruptedException ex) {
+                } finally {
+                    Log.d(TAG, "Stopping bluetooth metadata service");
+                    thread.stop();
+                }
 
                 return;
             }

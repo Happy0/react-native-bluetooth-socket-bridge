@@ -105,7 +105,9 @@ public class BluetoothMetadataService {
     }
 
     public void getInfoFromMetadataService(
-            String deviceAddress, String serviceUUID, GetMetadataHandler handler
+            final String deviceAddress,
+            final String serviceUUID,
+            final GetMetadataHandler handler
     ) {
         Log.d(TAG, String.format("Attempting to get metadata with params %s %s", deviceAddress, serviceUUID));
 

@@ -33,6 +33,8 @@ public class GetMetadataHandler {
         error.put("error", true);
         error.put("errorCode", "errorGettingMetadata");
         error.put("description", errorDescription);
+        error.put("requestId", requestId);
+
 
         BluetoothControlCommand command = new BluetoothControlCommand(commandName, error);
         commandResponseQueue.add(command);

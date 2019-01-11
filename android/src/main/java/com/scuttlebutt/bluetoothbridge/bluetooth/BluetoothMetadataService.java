@@ -6,12 +6,20 @@ import android.bluetooth.BluetoothSocket;
 
 import java.util.UUID;
 
+import java.io.InputStream;
 import java.io.OutputStream;
-
+import android.bluetooth.BluetoothDevice;
 import android.os.Handler;
 import android.util.Log;
 
 import java.io.IOException;
+import com.fasterxml.jackson.core.type.TypeReference;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.scuttlebutt.bluetoothbridge.control.GetMetadataHandler;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A service that just sends connecting clients the same payload every time, and then
@@ -96,7 +104,51 @@ public class BluetoothMetadataService {
         return;
     }
 
-    public Runnable stopServerThread(final Thread thread, final long stopAfter) {
+    public void getInfoFromMetadataService(
+            String deviceAddress, String serviceUUID, GetMetadataHandler handler
+    ) {
+        Log.d(TAG, String.format("Attempting to get metadata with params %s %s", deviceAddress, serviceUUID));
+
+        UUID uuid = UUID.fromString(serviceUUID);
+
+        Runnable runnable = new Runnable() {
+            public void run() {
+
+                BluetoothDevice remoteDevice = bluetoothAdapter.getRemoteDevice(deviceAddress);
+                BluetoothSocket bluetoothSocket = remoteDevice.createRfcommSocketToServiceRecord(uuid);
+
+                try {
+                    bluetoothSocket.connect();
+
+                    InputStream inputStream = bluetoothSocket.getInputStream();
+
+                    ObjectMapper objectMapper = new ObjectMapper();
+
+                    TypeReference<HashMap<String,Object>> typeRef
+                            = new TypeReference<HashMap<String,Object>>() {};
+
+                    Map<String, Object> result = objectMapper.readValue(inputStream, typeRef);
+
+                    handler.onSuccess(result);
+
+                } catch (IOException ex) {
+                    handler.onError(ex.getMessage());
+                } finally {
+                    try {
+                        bluetoothSocket.close();
+                    } catch (IOException ex) {
+
+                    }
+                }
+
+            }
+        };
+
+        Thread thread = new Thread(runnable);
+        thread.start();
+    }
+
+    private Runnable stopServerThread(final Thread thread, final long stopAfter) {
         return new Runnable() {
             public void run() {
 

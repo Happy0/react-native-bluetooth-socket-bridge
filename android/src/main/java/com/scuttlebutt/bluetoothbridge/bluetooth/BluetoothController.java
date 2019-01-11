@@ -13,6 +13,8 @@ import com.scuttlebutt.bluetoothbridge.control.DiscoveredDevicesHandler;
 import com.scuttlebutt.bluetoothbridge.control.MakeDeviceDiscoverableHandler;
 import com.scuttlebutt.bluetoothbridge.receivers.BluetoothEnablednessHandler;
 import com.scuttlebutt.bluetoothbridge.control.StartMetadataServiceHandler;
+import com.scuttlebutt.bluetoothbridge.control.GetMetadataHandler;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,6 +75,10 @@ public class BluetoothController {
             handler.onError(e.getMessage());
         }
 
+    }
+
+    public void getInfoFromMetadataService(String deviceAddress, String serviceUUID, GetMetadataHandler handler) {
+        this.metadataService.getInfoFromMetadataService(deviceAddress, serviceUUID, handler);
     }
 
     public void registerBluetoothEnablednessListener(final BluetoothEnablednessHandler handler) {

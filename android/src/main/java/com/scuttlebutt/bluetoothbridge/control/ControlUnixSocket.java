@@ -242,6 +242,16 @@ public class ControlUnixSocket {
             StartMetadataServiceHandler handler = new StartMetadataServiceHandler(commandResponseQueue);
 
             bluetoothController.startMetadataService(serviceName, serviceUUID, payload, timeSeconds, handler);
+        } else if (commandName.equals("getMetadata")) {
+            Log.d(TAG, "Getting metadata for device address.");
+
+            String deviceAddress = bluetoothControlCommand.getArgumentAsString("deviceAddress");
+            String serviceUUID = bluetoothControlCommand.getArgumentAsString("service");
+            String requestId = bluetoothControlCommand.getArgumentAsString("requestId");
+
+            GetMetadataHandler handler = new GetMetadataHandler(commandResponseQueue, requestId);
+
+            bluetoothController.getInfoFromMetadataService(deviceAddress, serviceUUID, handler);
         }
 
     }

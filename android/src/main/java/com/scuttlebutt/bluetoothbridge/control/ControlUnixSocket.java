@@ -245,7 +245,7 @@ public class ControlUnixSocket {
         } else if (commandName.equals("getMetadata")) {
             Log.d(TAG, "Getting metadata for device address.");
 
-            String deviceAddress = bluetoothControlCommand.getArgumentAsString("deviceAddress");
+            String deviceAddress = bluetoothControlCommand.getArgumentAsString("remoteDevice");
             String serviceUUID = bluetoothControlCommand.getArgumentAsString("service");
             String requestId = bluetoothControlCommand.getArgumentAsString("requestId");
 

@@ -47,7 +47,7 @@ public class BluetoothMetadataService {
 
         final BluetoothServerSocket bluetoothServerSocket = BluetoothAdapter
                 .getDefaultAdapter()
-                .listenUsingRfcommWithServiceRecord(serviceName, uuid);
+                .listenUsingInsecureRfcommWithServiceRecord(serviceName, uuid);
 
         Runnable runnable = new Runnable() {
 
@@ -120,7 +120,7 @@ public class BluetoothMetadataService {
 
                 try {
                     BluetoothDevice remoteDevice = bluetoothAdapter.getRemoteDevice(deviceAddress);
-                    bluetoothSocket = remoteDevice.createRfcommSocketToServiceRecord(uuid);
+                    bluetoothSocket = remoteDevice.createInsecureRfcommSocketToServiceRecord(uuid);
 
                     bluetoothSocket.connect();
 

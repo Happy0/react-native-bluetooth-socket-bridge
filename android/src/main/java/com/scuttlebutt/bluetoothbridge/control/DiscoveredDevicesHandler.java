@@ -13,9 +13,14 @@ import java.util.concurrent.BlockingQueue;
 public class DiscoveredDevicesHandler implements DiscoveredBluetoothDevicesHandler {
 
     private final BlockingQueue<BluetoothControlCommand> commandResponseBuffer;
+    private final String requestId;
 
-    public DiscoveredDevicesHandler(BlockingQueue<BluetoothControlCommand> commandResponseBuffer) {
+    public DiscoveredDevicesHandler(
+            BlockingQueue<BluetoothControlCommand> commandResponseBuffer,
+            String requestId
+    ) {
         this.commandResponseBuffer = commandResponseBuffer;
+        this.requestId = requestId;
     }
 
     public void onDiscovered(List<BluetoothDevice> devices) {
@@ -32,7 +37,7 @@ public class DiscoveredDevicesHandler implements DiscoveredBluetoothDevicesHandl
         properties.put("devices", deviceProperties);
 
         BluetoothControlCommand bluetoothControlCommand =
-                new BluetoothControlCommand("discovered", properties);
+                new BluetoothControlCommand("discovered", properties, requestId);
 
         commandResponseBuffer.add(bluetoothControlCommand);
     }
@@ -44,7 +49,7 @@ public class DiscoveredDevicesHandler implements DiscoveredBluetoothDevicesHandl
         error.put("errorCode", "bluetoothDisabled");
         error.put("description", "Bluetooth is not enabled");
 
-        BluetoothControlCommand errorCommand = new BluetoothControlCommand("discovered", error);
+        BluetoothControlCommand errorCommand = new BluetoothControlCommand("discovered", error, requestId);
 
         commandResponseBuffer.add(errorCommand);
     }
@@ -56,7 +61,7 @@ public class DiscoveredDevicesHandler implements DiscoveredBluetoothDevicesHandl
         error.put("errorCode", "notSupported");
         error.put("description", "Bluetooth is not supported on this device.");
 
-        BluetoothControlCommand errorCommand = new BluetoothControlCommand("discovered", error);
+        BluetoothControlCommand errorCommand = new BluetoothControlCommand("discovered", error, requestId);
 
         commandResponseBuffer.add(errorCommand);
     }

@@ -22,9 +22,8 @@ public class GetMetadataHandler {
         Map<String, Object> arguments = new HashMap<>();
         arguments.put("error", false);
         arguments.put("metadata", metadata);
-        arguments.put("requestId", requestId);
 
-        BluetoothControlCommand command = new BluetoothControlCommand(commandName, arguments);
+        BluetoothControlCommand command = new BluetoothControlCommand(commandName, arguments, requestId);
         commandResponseQueue.add(command);
     }
 
@@ -33,10 +32,8 @@ public class GetMetadataHandler {
         error.put("error", true);
         error.put("errorCode", "errorGettingMetadata");
         error.put("description", errorDescription);
-        error.put("requestId", requestId);
 
-
-        BluetoothControlCommand command = new BluetoothControlCommand(commandName, error);
+        BluetoothControlCommand command = new BluetoothControlCommand(commandName, error, requestId);
         commandResponseQueue.add(command);
     }
 

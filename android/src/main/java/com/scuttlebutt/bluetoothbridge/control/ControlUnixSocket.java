@@ -199,7 +199,9 @@ public class ControlUnixSocket {
         else if (commandName.equals("discoverDevices")) {
             Log.d(TAG, "Discovering nearby devices");
 
-            DiscoveredDevicesHandler devicesHandler = new DiscoveredDevicesHandler(commandResponseQueue);
+            DiscoveredDevicesHandler devicesHandler = new DiscoveredDevicesHandler(
+                    commandResponseQueue, bluetoothControlCommand.getRequestId()
+            );
             bluetoothController.discoverNearbyDevices(devicesHandler);
         } else if (commandName.equals("makeDiscoverable")) {
 
@@ -247,7 +249,7 @@ public class ControlUnixSocket {
 
             String deviceAddress = bluetoothControlCommand.getArgumentAsString("remoteDevice");
             String serviceUUID = bluetoothControlCommand.getArgumentAsString("service");
-            String requestId = bluetoothControlCommand.getArgumentAsString("requestId");
+            String requestId = bluetoothControlCommand.getRequestId();
 
             GetMetadataHandler handler = new GetMetadataHandler(commandResponseQueue, requestId);
 

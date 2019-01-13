@@ -9,6 +9,7 @@ public class BluetoothControlCommand {
 
     private String command;
     private Map<String, Object> arguments;
+    private String requestId;
 
     public BluetoothControlCommand() {
 
@@ -17,6 +18,11 @@ public class BluetoothControlCommand {
     public BluetoothControlCommand(String command, Map<String, Object> arguments) {
         this.command = command;
         this.arguments = arguments;
+    }
+
+    public BluetoothControlCommand(String command, Map<String, Object> arguments, String requestId) {
+        this(command, arguments);
+        this.requestId = requestId;
     }
 
     public String getCommand() {
@@ -36,5 +42,9 @@ public class BluetoothControlCommand {
 
         // todo: handle exception
         return Integer.parseInt(argumentAsString);
+    }
+
+    public String getRequestId() {
+        return requestId;
     }
 }

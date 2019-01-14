@@ -20,6 +20,8 @@ import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 public class ControlUnixSocket {
 
     private final String controlSocketPath;
@@ -236,14 +238,20 @@ public class ControlUnixSocket {
         } else if (commandName.equals("startMetadataService")) {
             Log.d(TAG, "Starting metadata service");
 
-            String serviceName = bluetoothControlCommand.getArgumentAsString("serviceName");
-            String serviceUUID = bluetoothControlCommand.getArgumentAsString("service");
-            String payload = bluetoothControlCommand.getArgumentAsJSONString("payload");
-            long timeSeconds = bluetoothControlCommand.getArgumentAsInt("timeSeconds");
-
             StartMetadataServiceHandler handler = new StartMetadataServiceHandler(commandResponseQueue);
 
-            bluetoothController.startMetadataService(serviceName, serviceUUID, payload, timeSeconds, handler);
+            try {
+                String serviceName = bluetoothControlCommand.getArgumentAsString("serviceName");
+                String serviceUUID = bluetoothControlCommand.getArgumentAsString("service");
+                String payload = bluetoothControlCommand.getArgumentAsJSONString("payload");
+                long timeSeconds = bluetoothControlCommand.getArgumentAsInt("timeSeconds");
+
+                bluetoothController.startMetadataService(serviceName, serviceUUID, payload, timeSeconds, handler);
+            } catch (JsonProcessingException ex) {
+                handler.onError(ex.getMessage());
+            }
+
+
         } else if (commandName.equals("getMetadata")) {
             Log.d(TAG, "Getting metadata for device address.");
 

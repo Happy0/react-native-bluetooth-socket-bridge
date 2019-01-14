@@ -2,6 +2,7 @@ package com.scuttlebutt.bluetoothbridge.control;
 
 import java.util.Map;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 /**
  * TODO: Can we be fancier about deserialization? i.e. deserialize into well typed subclasses
@@ -45,7 +46,7 @@ public class BluetoothControlCommand {
         return Integer.parseInt(argumentAsString);
     }
 
-    public String getArgumentAsJSONString(String key) {
+    public String getArgumentAsJSONString(String key) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
 
         Object value = arguments.get(key);

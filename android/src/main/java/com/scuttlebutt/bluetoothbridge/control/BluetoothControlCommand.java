@@ -1,6 +1,7 @@
 package com.scuttlebutt.bluetoothbridge.control;
 
 import java.util.Map;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * TODO: Can we be fancier about deserialization? i.e. deserialize into well typed subclasses
@@ -42,6 +43,14 @@ public class BluetoothControlCommand {
 
         // todo: handle exception
         return Integer.parseInt(argumentAsString);
+    }
+
+    public String getArgumentAsJSONString(String key) {
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        Object value = arguments.get(key);
+
+        return objectMapper.writeValueAsString(value);
     }
 
     public String getRequestId() {

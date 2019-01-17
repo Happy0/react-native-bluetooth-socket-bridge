@@ -122,7 +122,9 @@ public class ConnectionBridge {
                             Log.d(TAG, "Could not connect to unix socket to proxy bluetooth connection");
                             e.printStackTrace();
                             connectionStatusNotifier.onConnectionFailure(address, e.getMessage(), false);
-                            return;
+
+                            // Go to the top to await the next connection
+                            continue;
                         }
 
                         Log.d(TAG, "Attempting bluetooth connection to " + address);
@@ -132,7 +134,9 @@ public class ConnectionBridge {
 
                             close(localSocket);
                             connectionStatusNotifier.onConnectionFailure(address, "Already connected.", false);
-                            return;
+
+                            // Go to the top to await the next connection
+                            continue;
                         }
 
                         BluetoothDevice remoteDevice = bluetoothAdapter.getRemoteDevice(address);
@@ -163,8 +167,6 @@ public class ConnectionBridge {
                             connectionStatusNotifier.onConnectionFailure(address, ex.getMessage(), false);
                             close(localSocket);
                         }
-
-
 
                     } catch (InterruptedException e) {
                         e.printStackTrace();

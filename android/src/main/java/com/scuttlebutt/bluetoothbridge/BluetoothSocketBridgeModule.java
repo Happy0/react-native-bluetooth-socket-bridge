@@ -90,6 +90,7 @@ public class BluetoothSocketBridgeModule extends ReactContextBaseJavaModule impl
     connectionBridge.listenForOutgoingConnections();
     bluetoothIncomingController.start();
 
+    this.reactContext.addActivityEventListener(this);
   }
 
   public synchronized void makeDeviceDiscoverable(int timeSeconds, MakeDeviceDiscoverableHandler handler) {

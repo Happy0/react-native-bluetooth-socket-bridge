@@ -33,7 +33,7 @@ public class BluetoothSocketBridgeModule extends ReactContextBaseJavaModule impl
   private final ReactApplicationContext reactContext;
   private final BluetoothSocketBridgeConfiguration configuration;
 
-  private static final int REQUEST_MAKE_DISCOVERABLE = 3;
+  private static final int REQUEST_MAKE_DISCOVERABLE = 333;
 
   private static String TAG = "socket_bridge_module";
 
@@ -109,7 +109,7 @@ public class BluetoothSocketBridgeModule extends ReactContextBaseJavaModule impl
       discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, timeSeconds);
 
       this.makeDeviceDiscoverableHandler = handler;
-      reactContext.startActivityForResult(
+      activity.startActivityForResult(
               discoverableIntent,
               REQUEST_MAKE_DISCOVERABLE,
               Bundle.EMPTY);

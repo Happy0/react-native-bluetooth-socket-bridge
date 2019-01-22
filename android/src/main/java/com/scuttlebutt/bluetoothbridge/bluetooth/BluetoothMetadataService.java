@@ -54,18 +54,24 @@ public class BluetoothMetadataService {
             @Override
             public void run() {
 
-                boolean closed = false;
-
                 try {
                     while (true) {
 
-                        if (!bluetoothAdapter.isEnabled() || closed) {
+                        if (!bluetoothAdapter.isEnabled()) {
+                            Log.d(TAG, "Bluetooth is not enabled. Not starting metadata service.");
                             break;
                         }
 
                         try {
-                            final BluetoothSocket socket = bluetoothServerSocket.accept();
-                            Log.d(TAG, "Accepted incoming connection to bluetooth metadata service.");
+
+                            BluetoothSocket socket = null;
+                            try {
+                                socket = bluetoothServerSocket.accept();
+                                Log.d(TAG, "Accepted incoming connection to bluetooth metadata service.");
+                            } catch (IOException ex) {
+                                Log.d(TAG, "Metadata service thread interrupted. Closing. ");
+                                break;
+                            }
 
                             try {
                                 OutputStream outputStream = socket.getOutputStream();
@@ -79,10 +85,6 @@ public class BluetoothMetadataService {
                         }
 
                     }
-                } catch (InterruptedException ex) {
-                    Log.d(TAG, "Metadata service thread interrupted. Closing. ");
-
-                    closed = true;
                 } finally {
                     Log.d(TAG, "Closing bluetooth metadata service socket.");
 
@@ -90,11 +92,11 @@ public class BluetoothMetadataService {
                         bluetoothServerSocket.close();
                     } catch (IOException ex) {
 
-                    } finally {
-                        closed = true;
                     }
 
                 }
+
+                Log.d(TAG, "Leaving metadata service server run block...");
             }
 
         };
@@ -102,7 +104,7 @@ public class BluetoothMetadataService {
         Thread thread = new Thread(runnable);
         thread.start();
 
-        Thread stopServerThread = new Thread(stopServerThread(thread, timeSeconds * 1000));
+        Thread stopServerThread = new Thread(stopServerThread(bluetoothServerSocket, timeSeconds * 1000));
         stopServerThread.start();
 
         return;
@@ -158,7 +160,7 @@ public class BluetoothMetadataService {
         thread.start();
     }
 
-    private Runnable stopServerThread(final Thread thread, final long stopAfter) {
+    private Runnable stopServerThread(final BluetoothServerSocker serverSocket, final long stopAfter) {
         return new Runnable() {
             public void run() {
 
@@ -167,7 +169,7 @@ public class BluetoothMetadataService {
                 } catch (InterruptedException ex) {
                 } finally {
                     Log.d(TAG, "Stopping bluetooth metadata service");
-                    thread.interrupt();
+                    serverSocket.close();
                 }
 
                 return;

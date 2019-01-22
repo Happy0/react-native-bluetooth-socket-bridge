@@ -169,7 +169,13 @@ public class BluetoothMetadataService {
                 } catch (InterruptedException ex) {
                 } finally {
                     Log.d(TAG, "Stopping bluetooth metadata service");
-                    serverSocket.close();
+
+                    try {
+                        serverSocket.close();
+                    } catch (IOException ex) {
+                        Log.d(TAG, "IOException while trying to close metadata server socket: " + ex.getMessage());
+                    }
+
                 }
 
                 return;

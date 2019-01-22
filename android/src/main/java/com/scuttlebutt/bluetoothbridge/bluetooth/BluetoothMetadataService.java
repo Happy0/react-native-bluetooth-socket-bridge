@@ -160,7 +160,7 @@ public class BluetoothMetadataService {
         thread.start();
     }
 
-    private Runnable stopServerThread(final BluetoothServerSocker serverSocket, final long stopAfter) {
+    private Runnable stopServerThread(final BluetoothServerSocket serverSocket, final long stopAfter) {
         return new Runnable() {
             public void run() {
 

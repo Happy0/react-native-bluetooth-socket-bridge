@@ -79,6 +79,10 @@ public class BluetoothMetadataService {
                         }
 
                     }
+                } catch (InterruptedException ex) {
+                    Log.d(TAG, "Metadata service thread interrupted. Closing. ");
+
+                    closed = true;
                 } finally {
                     Log.d(TAG, "Closing bluetooth metadata service socket.");
 
@@ -163,7 +167,7 @@ public class BluetoothMetadataService {
                 } catch (InterruptedException ex) {
                 } finally {
                     Log.d(TAG, "Stopping bluetooth metadata service");
-                    thread.stop();
+                    thread.interrupt();
                 }
 
                 return;

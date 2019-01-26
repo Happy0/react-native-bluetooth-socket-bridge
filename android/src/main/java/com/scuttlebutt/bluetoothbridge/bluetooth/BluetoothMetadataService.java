@@ -44,6 +44,7 @@ public class BluetoothMetadataService {
 
         BlockingQueue<Runnable> workQueue = new LinkedBlockingQueue<Runnable>();
         this.threadPoolExecutor = new ThreadPoolExecutor(4, 10, 60, TimeUnit.SECONDS, workQueue);
+        this.threadPoolExecutor.allowCoreThreadTimeOut(true);
     }
 
     public synchronized void startMetadataService(

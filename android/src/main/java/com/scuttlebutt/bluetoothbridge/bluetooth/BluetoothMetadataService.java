@@ -21,6 +21,12 @@ import com.scuttlebutt.bluetoothbridge.control.GetMetadataHandler;
 import java.util.HashMap;
 import java.util.Map;
 
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+
 /**
  * A service that just sends connecting clients the same payload every time, and then
  * disconnects when it has finished sending.
@@ -31,8 +37,11 @@ public class BluetoothMetadataService {
 
     private final BluetoothAdapter bluetoothAdapter;
 
+    private final BlockingQueue<Runnable> workQueue = new LinkedBlockingQueue<Runnable>();
+
     public BluetoothMetadataService(BluetoothAdapter bluetoothAdapter) {
         this.bluetoothAdapter = bluetoothAdapter;
+        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(4, 10, 60, TimeUnit.SECONDS, workQueue);
     }
 
     public synchronized void startMetadataService(
@@ -156,8 +165,7 @@ public class BluetoothMetadataService {
             }
         };
 
-        Thread thread = new Thread(runnable);
-        thread.start();
+        workQueue.add(runnable);
     }
 
     private Runnable stopServerThread(final BluetoothServerSocket serverSocket, final long stopAfter) {

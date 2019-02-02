@@ -15,7 +15,6 @@ import com.scuttlebutt.bluetoothbridge.receivers.BluetoothEnablednessHandler;
 import com.scuttlebutt.bluetoothbridge.control.StartMetadataServiceHandler;
 import com.scuttlebutt.bluetoothbridge.control.GetMetadataHandler;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,6 +40,8 @@ public class BluetoothController {
         this.adapter = adapter;
 
         this.metadataService = new BluetoothMetadataService(adapter);
+
+
     }
 
     public void discoverNearbyDevices(DiscoveredDevicesHandler devicesHandler) {

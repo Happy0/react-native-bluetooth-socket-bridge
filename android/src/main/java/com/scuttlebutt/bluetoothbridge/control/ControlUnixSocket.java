@@ -22,6 +22,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import com.scuttlebutt.bluetoothbridge.receivers.BluetoothEnablednessHandler;
+
 public class ControlUnixSocket {
 
     private final String controlSocketPath;
@@ -47,6 +49,12 @@ public class ControlUnixSocket {
         this.bluetoothController = bluetoothController;
 
         this.awaitingOutgoingConnection = awaitingOutgoingConnection;
+
+        BluetoothEnablednessHandler stateUpdateHandler = new BluetoothStateUpdateHandler(
+                commandResponseQueue
+        );
+
+        bluetoothController.registerBluetoothEnablednessListener(stateUpdateHandler);
 
         // Don't close the mapper as we will be reading and writing multiple incoming and outgoing
         // JSON objects

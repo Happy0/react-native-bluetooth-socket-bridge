@@ -110,6 +110,7 @@ public class ConnectionBridge {
                         Log.d(TAG, "Dequeue awaiting connection: " + address);
 
                         if (!bluetoothAdapter.isEnabled()) {
+                            Log.d(TAG, "Aborting outgoing connection as bluetooth is not enabled.");
                             connectionStatusNotifier.onConnectionFailure(address, "Bluetooth is not enabled", false);
                             continue;
                         }

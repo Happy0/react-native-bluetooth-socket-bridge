@@ -22,6 +22,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import java.util.Scanner;
+
 import com.scuttlebutt.bluetoothbridge.receivers.BluetoothEnablednessHandler;
 
 public class ControlUnixSocket {
@@ -55,10 +57,6 @@ public class ControlUnixSocket {
         );
 
         bluetoothController.registerBluetoothEnablednessListener(stateUpdateHandler);
-
-        // Don't close the mapper as we will be reading and writing multiple incoming and outgoing
-        // JSON objects
-        objectMapper.configure(JsonParser.Feature.AUTO_CLOSE_SOURCE, false);
     }
 
     /**
@@ -168,17 +166,28 @@ public class ControlUnixSocket {
         try {
             InputStream inputStream = socket.getInputStream();
 
+            Scanner scanner = new Scanner(inputStream).useDelimiter("\n\n");
+
             while (true) {
                 // Each command is sent as a JSON payload, so we continue reading new command
                 // objects while the thread is open
                 // TODO: more fine grained / well typed deserialization ?
 
-                BluetoothControlCommand bluetoothControlCommand =
-                        objectMapper.readValue(inputStream, BluetoothControlCommand.class);
+                if (scanner.hasNext()) {
+                    String nextCommand = scanner.next();
 
-                Log.d(TAG, "Socket is connected? " + socket.isConnected());
+                    Log.d(TAG, "Got next command.");
+                    Log.d(TAG, nextCommand);
 
-                doCommand(bluetoothControlCommand);
+                    BluetoothControlCommand bluetoothControlCommand =
+                            objectMapper.readValue(nextCommand, BluetoothControlCommand.class);
+
+                    Log.d(TAG, "Socket is connected? " + socket.isConnected());
+
+                    doCommand(bluetoothControlCommand);
+                } else {
+                    Log.d(TAG, "Incoming bluetooth command stream has ended");
+                }
             }
 
         } catch (IOException e) {

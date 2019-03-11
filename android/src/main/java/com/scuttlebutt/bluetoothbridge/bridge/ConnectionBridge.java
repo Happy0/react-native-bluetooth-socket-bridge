@@ -109,7 +109,12 @@ public class ConnectionBridge {
                         String address = awaitingOutgoingConnection.take();
                         Log.d(TAG, "Dequeue awaiting connection: " + address);
 
-                        Log.d(TAG, "Opening unix socket connection to proxy the bluetooth connection.");
+                        if (!bluetoothAdapter.isEnabled()) {
+                            connectionStatusNotifier.onConnectionFailure(address, "Bluetooth is not enabled", false);
+                            continue;
+                        }
+
+                            Log.d(TAG, "Opening unix socket connection to proxy the bluetooth connection.");
 
                         LocalSocket localSocket = new LocalSocket();
                         LocalSocketAddress localSocketAddress = new LocalSocketAddress(
